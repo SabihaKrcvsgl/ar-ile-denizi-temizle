@@ -1,106 +1,63 @@
 using UnityEngine;
-using UnityEngine.UI;
-using UnityEngine.EventSystems;
-using TMPro;
+using UnityEngine.InputSystem;
 
 public class ObjectClickHandler : MonoBehaviour
 {
-    [Header("UI Referansları")]
-    public TextMeshProUGUI scoreText;
     public GameObject infoPanel;
-    public TextMeshProUGUI infoText;
-    public GameObject congratsPanel;
-    public TextMeshProUGUI finalScoreText;
+    public string targetTag = "Turtle";
 
-    [Header("Ayarlar")]
-    public int pointPerTrash = 10;
-
-    private int score = 0;
-    private int trashCount = 0;
-    private int totalTrash = 0;
-    private Camera arCamera;
+    private Camera _cam;
 
     void Start()
     {
-        score = 0;
-        trashCount = 0;
-        totalTrash = GameObject.FindGameObjectsWithTag("Trash").Length;
-        arCamera = Camera.main;
-
-        if (scoreText != null) scoreText.text = "Puan: 0";
-        if (infoPanel != null) infoPanel.SetActive(false);
-        if (congratsPanel != null) congratsPanel.SetActive(false);
-
-        Debug.Log("Toplam çöp: " + totalTrash);
+        _cam = Camera.main;
+        Debug.Log("BAŞLADI - ObjectClickHandler (New Input System)");
+        infoPanel?.SetActive(false);
     }
 
     void Update()
     {
-        if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began)
+        // Yeni Input System - dokunuş
+        if (Touchscreen.current != null)
         {
-            Touch touch = Input.GetTouch(0);
-
-            if (infoPanel != null && infoPanel.activeSelf)
-                return;
-
-            Ray ray = arCamera.ScreenPointToRay(touch.position);
-            RaycastHit hit;
-
-            Debug.Log("Dokunuldu: " + touch.position);
-
-            if (Physics.Raycast(ray, out hit, 100f))
+            var touch = Touchscreen.current.primaryTouch;
+            if (touch.phase.ReadValue() == UnityEngine.InputSystem.TouchPhase.Began)
             {
-                Debug.Log("Hit: " + hit.collider.gameObject.name + " Tag: " + hit.collider.gameObject.tag);
-                HandleObjectTouch(hit.collider.gameObject);
+                HandleClick(touch.position.ReadValue());
+                return;
+            }
+        }
+
+        // Yeni Input System - mouse (Editor'da test için)
+        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
+        {
+            HandleClick(Mouse.current.position.ReadValue());
+        }
+    }
+
+    void HandleClick(Vector2 screenPos)
+    {
+        Debug.Log($"[CLICK] Tıklandı: {screenPos}");
+
+        Ray ray = _cam.ScreenPointToRay(screenPos);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+        {
+            Debug.Log($"[HIT] Obje: {hit.collider.name} | Tag: {hit.collider.tag}");
+
+            if (hit.collider.CompareTag(targetTag))
+            {
+                Debug.Log("[PANEL] InfoPanel açılıyor!");
+                infoPanel?.SetActive(true);
             }
             else
             {
-                Debug.Log("Hiçbir şeye çarpmadı");
+                infoPanel?.SetActive(false);
             }
         }
-    }
-
-    void HandleObjectTouch(GameObject obj)
-    {
-        if (obj.CompareTag("Animal"))
+        else
         {
-            ShowAnimalInfo(obj.name);
+            Debug.Log("[MISS] Hiçbir şeye çarpmadı.");
         }
-        else if (obj.CompareTag("Trash"))
-        {
-            CollectTrash(obj);
-        }
-    }
-
-    void ShowAnimalInfo(string animalName)
-    {
-        if (infoPanel == null) return;
-        infoText.text = "DENİZ KAPLUMBAĞASI\n\nDeniz kaplumbağaları okyanuslarda yaşar. Plastik atıklar onların hayatını tehdit eder.";
-        infoPanel.SetActive(true);
-    }
-
-    void CollectTrash(GameObject obj)
-    {
-        score += pointPerTrash;
-        trashCount++;
-        if (scoreText != null) scoreText.text = "Puan: " + score;
-        Destroy(obj);
-
-        if (trashCount >= totalTrash)
-        {
-            if (congratsPanel != null) congratsPanel.SetActive(true);
-            if (finalScoreText != null) finalScoreText.text = "Toplam Puanın\n" + score;
-        }
-    }
-
-    public void CloseInfo()
-    {
-        if (infoPanel != null) infoPanel.SetActive(false);
-    }
-
-    public void RestartGame()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name);
     }
 }
