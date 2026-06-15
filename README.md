@@ -1,5 +1,8 @@
 # AR ile Denizi Temizle ve Canlıları Keşfet
 
+## Demo Video 
+https://drive.google.com/file/d/1HOYzPKXeXcJ1DsjpM2AmDihNm-qKH5DZ/view?usp=sharing
+
 Çocuklar için geliştirilmiş artırılmış gerçeklik (AR) tabanlı eğitici mobil uygulamadır.
 
 ## Proje Amacı
