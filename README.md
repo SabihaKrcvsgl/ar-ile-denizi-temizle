@@ -18,3 +18,12 @@ Bu proje, çocukların deniz canlılarını tanımasını ve deniz kirliliği ko
 
 ## Proje Türü
 Mixed Reality (MR) / AR eğitim uygulaması
+
+## Uygulamayı İndir (APK)
+
+Android cihaza kurmak için: [ar_deniz.apk indir](https://github.com/SabihaKrcvsgl/ar-ile-denizi-temizle/releases/latest)
+
+Kurulum:
+1. Linkten ar_deniz.apk dosyasını telefona indir.
+2. Telefonun ayarlarından "Bilinmeyen kaynaklara izin ver" seçeneğini aç.
+3. İndirdiğin APK'ya dokunup kurulumu tamamla.
